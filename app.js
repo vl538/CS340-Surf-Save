@@ -108,7 +108,7 @@ app.get('/customers', async (req, res) => {
 
 app.get('/orders', async (req, res) => {
     try {
-        console.log('🔍 Fetching orders from database...');
+        console.log(' Fetching orders from database...');
         
         const [orders] = await pool.query(`
             SELECT o.*, CONCAT(c.firstName, ' ', c.lastName) as customerName 
@@ -303,9 +303,9 @@ app.post('/delete-orderitem', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📱 Access at: http://classwork.engr.oregonstate.edu:${PORT}`);
-    console.log('\n📊 Pages:');
+    console.log(`Server running on port ${PORT}`);
+    console.log(` Access at: http://classwork.engr.oregonstate.edu:${PORT}`);
+    console.log('\n Pages:');
     console.log('   - /customers');
     console.log('   - /orders');
     console.log('   - /products');
