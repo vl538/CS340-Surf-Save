@@ -3,7 +3,7 @@ const exphbs = require('express-handlebars');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 59905; // Change to your assigned port
+const PORT = process.env.PORT || 50005; // Change to your assigned port
 
 // Create custom helpers
 const handlebarsHelpers = {
