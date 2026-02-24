@@ -26,9 +26,9 @@ const PORT = process.env.PORT || 59998;
 //DB config use your osu credentials 
 const dbConfig = {
     host: 'classmysql.engr.oregonstate.edu',
-    user: 'cs340_levince',      
-    password: '8572',   
-    database: 'cs340_levince',  
+    user: '',      
+    password: '',   
+    database: '',  
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
