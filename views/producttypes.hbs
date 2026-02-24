@@ -1,0 +1,44 @@
+<div class="header">
+    <h2>Product Type</h2>
+</div>
+
+<div class="section">
+    <h3>Add New Product Type</h3>
+    <form action="/add-producttype" method="POST" class="form">
+        <div class="form-group">
+            <textarea name="description" placeholder="Product Type Description" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn">Add Product Type</button>
+    </form>
+</div>
+
+<div class="section">
+    <h3>Existing Product Types</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Type ID</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each productTypes}}
+            <tr>
+                <td>{{productTypeID}}</td>
+                <td>{{description}}</td>
+                <td class="actions">
+                    <form action="/update-producttype" method="POST" style="display: inline;">
+                        <input type="hidden" name="productTypeID" value="{{productTypeID}}">
+                        <button type="submit" class="btn-sm">Edit</button>
+                    </form>
+                    <form action="/delete-producttype" method="POST" style="display: inline;">
+                        <input type="hidden" name="productTypeID" value="{{productTypeID}}">
+                        <button type="submit" class="btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
