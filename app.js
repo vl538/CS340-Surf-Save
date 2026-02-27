@@ -21,14 +21,14 @@ const path = require('path');
 const mysql = require('mysql2/promise');
 
 const app = express();
-const PORT = process.env.PORT || 59998;
+const PORT = process.env.PORT || 50005;
 
 //DB config use your osu credentials 
 const dbConfig = {
     host: 'classmysql.engr.oregonstate.edu',
-    user: '',      
-    password: '',   
-    database: '',  
+    user: 'cs340_lopushem',      
+    password: '3333',   
+    database: 'cs340_lopushem',  
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
