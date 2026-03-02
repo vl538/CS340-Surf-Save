@@ -14,6 +14,14 @@
 //(Explain degree of originality) Used to set up dependancies and connect to CS340 database
 //Source URL: https://canvas.oregonstate.edu/courses/2031764/assignments/10323319?module_item_id=26243357
 
+//Citation for the following code:
+//Date: 03/02/2026
+//Adapted for microsoft Copilot
+//(Explain degree of originality)Used to understand how to handle "delete-customer" button correctly
+//Source URL: https://copilot.microsoftgit branch.com/
+//If AI tools were used: Prompts include:
+// "How to delete customer with related foreign key records in Express and MySQL?"
+
 
 const express = require('express');
 const exphbs = require('express-handlebars');
@@ -249,8 +257,23 @@ app.post('/update-customer', (req, res) => {
 });
 
 app.post('/delete-customer', async (req, res) => {
+    const customerID = req.body.customerID;
+
     try {
-        const customerID = req.body.customerID;
+
+        await pool.query(
+            `DELETE FROM OrderItems
+             WHERE orderID IN (
+                 SELECT orderID FROM Orders
+                 WHERE customerID = ?
+             )`,
+            [customerID]
+        );
+
+        await pool.query(
+            'DELETE FROM Orders WHERE customerID = ?',
+            [customerID]
+        );
 
         await pool.query(
             'DELETE FROM Customers WHERE customerID = ?',
@@ -258,9 +281,10 @@ app.post('/delete-customer', async (req, res) => {
         );
 
         res.redirect('/customers');
-    }   catch (err) {
-        console.error('Delete customer error:', err);
-        res.status(500).send(err.message);
+
+    } catch (error) {
+        console.error('Delete customer error:', error);
+        res.status(500).send(error.message);
     }
 });
 
