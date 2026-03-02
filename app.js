@@ -75,6 +75,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
+// GET routes
 app.get('/', (req, res) => {
     res.render('index', { 
         title: 'Home - E-commerce System',
@@ -224,7 +225,19 @@ app.get('/orderitems', async (req, res) => {
     }
 });
 
+// RESET
+app.get('/reset', async (req, res) => {
+    try {
+        await pool.query('CALL sp_reset_db()');
+        res.redirect('/');
+        } catch (err) {
+        console.error(err);
+        res.status(500).send(err.message);
+    }
+});
 
+
+// POST routes
 app.post('/add-customer', (req, res) => {
     console.log(' Add customer:', req.body);
     res.redirect('/customers');
@@ -235,9 +248,20 @@ app.post('/update-customer', (req, res) => {
     res.redirect('/customers');
 });
 
-app.post('/delete-customer', (req, res) => {
-    console.log('Delete customer ID:', req.body.customerID);
-    res.redirect('/customers');
+app.post('/delete-customer', async (req, res) => {
+    try {
+        const customerID = req.body.customerID;
+
+        await pool.query(
+            'DELETE FROM Customers WHERE customerID = ?',
+            [customerID]
+        );
+
+        res.redirect('/customers');
+    }   catch (err) {
+        console.error('Delete customer error:', err);
+        res.status(500).send(err.message);
+    }
 });
 
 app.post('/add-order', (req, res) => {
@@ -250,9 +274,25 @@ app.post('/update-order', (req, res) => {
     res.redirect('/orders');
 });
 
-app.post('/delete-order', (req, res) => {
-    console.log('Delete order ID:', req.body.orderID);
-    res.redirect('/orders');
+app.post('/delete-order',  async (req, res) => {
+    try {
+        const orderID  =  req.body.orderID;
+
+        await pool.query(
+            'DELETE FROM OrderItems WHERE orderID = ?',
+            [orderID]
+        );
+
+        await pool.query(
+            'DELETE FROM Orders WHERE orderID = ?',
+            [orderID]
+        );
+
+        res.redirect('/orders');
+    }   catch (err) {
+        console.error(err);
+        res.status(500).send(err.message);
+    }
 });
 
 
@@ -266,9 +306,25 @@ app.post('/update-product', (req, res) => {
     res.redirect('/products');
 });
 
-app.post('/delete-product', (req, res) => {
-    console.log('Delete product ID:', req.body.productID);
-    res.redirect('/products');
+app.post('/delete-product', async (req, res) => {
+    try {
+        const productID  =  req.body.productID;
+
+        await pool.query(
+            'DELETE FROM OrderItems WHERE productID = ?',
+            [productID]
+        );
+
+        await pool.query(
+            'DELETE FROM Products WHERE productID = ?',
+            [productID]
+        );
+
+        res.redirect('/products');
+    }   catch (err) {
+        console.error(err);
+        res.status(500).send(err.message);
+    }
 });
 
 app.post('/add-producttype', (req, res) => {
@@ -281,9 +337,37 @@ app.post('/update-producttype', (req, res) => {
     res.redirect('/producttypes');
 });
 
-app.post('/delete-producttype', (req, res) => {
-    console.log('Delete product type ID:', req.body.productTypeID);
+app.post('/delete-producttype', async (req, res) => {
+    try {
+        const productTypeID  =  req.body.productTypeID;
+
+        const [products]  =  await pool.query(
+            'SELECT productID FROM Products WHERE productTypeID = ?',
+            [productTypeID]
+        );
+
+        for (let product of products) {
+            await pool.query(
+                'DELETE FROM OrderItems WHERE productID = ?',
+                [product.productID]
+        );
+    }
+
+    await pool.query(
+        'DELETE FROM Products WHERE productTypeID = ?',
+        [productTypeID]
+    );
+
+    await pool.query(
+        'DELETE FROM ProductTypes WHERE productTypeID = ?',
+        [productTypeID]
+    );
+
     res.redirect('/producttypes');
+    } catch (err) {
+    console.error(err);
+    res.status(500).send(err.message);
+    }
 });
 
 // Order Items
@@ -297,10 +381,22 @@ app.post('/update-orderitem', (req, res) => {
     res.redirect('/orderitems');
 });
 
-app.post('/delete-orderitem', (req, res) => {
-    console.log('Delete order item ID:', req.body.orderItemID);
-    res.redirect('/orderitems');
-});
+app.post('/delete-orderitem',  async (req,  res)  =>  {
+    try {
+        const  orderItemID  =  req.body.orderItemID
+
+        await  pool.query(
+            'DELETE  FROM  OrderItems  WHERE  orderItemID  =  ?',
+            [orderItemID]
+        )
+
+        res.redirect('/orderitems')
+    }   catch  (err)  {
+        console.error(err)
+        res.status(500).send(err.message)
+    }
+})
+
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
