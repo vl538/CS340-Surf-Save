@@ -1,17 +1,25 @@
 <div class="header">
     <h2>Customer Management</h2>
+    <p>Browse, add, edit, and delete customer records</p>
 </div>
 
 <div class="section">
     <h3>Add New Customer</h3>
-    <form action="/add-customer" method="POST" class="form">
+    <form action="/add-customer" method="POST" class="form" onsubmit="return validateCustomerForm()">
         <div class="form-group">
-            <input type="text" name="firstName" placeholder="First Name" required>
-            <input type="text" name="lastName" placeholder="Last Name" required>
+            <input type="text" name="firstName" placeholder="First Name *" required 
+                   pattern="[A-Za-z\s-']+" title="First name can only contain letters, spaces, hyphens, and apostrophes">
+            <input type="text" name="lastName" placeholder="Last Name *" required
+                   pattern="[A-Za-z\s-']+" title="Last name can only contain letters, spaces, hyphens, and apostrophes">
         </div>
         <div class="form-group">
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="tel" name="phone" placeholder="Phone Number">
+            <input type="email" name="email" placeholder="Email Address *" required
+                   title="Please enter a valid email address">
+            <input type="tel" name="phone" placeholder="Phone Number (optional)" 
+                   pattern="[\d\s\-\(\)\+]{10,}" title="Please enter a valid phone number (at least 10 digits)">
+        </div>
+        <div class="form-group">
+            <small class="form-text">* Required fields</small>
         </div>
         <button type="submit" class="btn">Add Customer</button>
     </form>
@@ -43,7 +51,8 @@
                         <input type="hidden" name="customerID" value="{{customerID}}">
                         <button type="submit" class="btn-sm">Edit</button>
                     </form>
-                    <form action="/delete-customer" method="POST" style="display: inline;">
+                    <form action="/delete-customer" method="POST" style="display: inline;" 
+                          onsubmit="return confirm('Are you sure you want to delete {{firstName}} {{lastName}}? This will also delete all their orders and order items.')">
                         <input type="hidden" name="customerID" value="{{customerID}}">
                         <button type="submit" class="btn-sm btn-danger">Delete</button>
                     </form>
@@ -53,3 +62,35 @@
         </tbody>
     </table>
 </div>
+
+<script>
+function validateCustomerForm() {
+    const firstName = document.querySelector('input[name="firstName"]').value.trim();
+    const lastName = document.querySelector('input[name="lastName"]').value.trim();
+    const email = document.querySelector('input[name="email"]').value.trim();
+    const phone = document.querySelector('input[name="phone"]').value.trim();
+    
+    // Basic validation
+    if (!firstName || !lastName || !email) {
+        alert('Please fill in all required fields');
+        return false;
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert('Please enter a valid email address');
+        return false;
+    }
+    
+    if (phone) {
+        const phoneDigits = phone.replace(/\D/g, '');
+        if (phoneDigits.length < 10) {
+            alert('Please enter a valid phone number');
+            return false;
+        }
+    }
+    
+    return true;
+}
+</script>

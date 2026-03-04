@@ -1,12 +1,20 @@
 <div class="header">
-    <h2>Product Type</h2>
+    <h2>Product Types</h2>
+    <p>Browse, add, and delete product types/categories</p>
 </div>
 
 <div class="section">
     <h3>Add New Product Type</h3>
-    <form action="/add-producttype" method="POST" class="form">
+    <form action="/add-producttype" method="POST" class="form" onsubmit="return validateForm()">
         <div class="form-group">
-            <textarea name="description" placeholder="Product Type Description" rows="3" required></textarea>
+            <input 
+                type="text" 
+                name="description" 
+                placeholder="Enter product type (e.g., Shirts, Camp Supplies, Surfboards)" 
+                required
+                minlength="2"
+                maxlength="100"
+            >
         </div>
         <button type="submit" class="btn">Add Product Type</button>
     </form>
@@ -28,11 +36,8 @@
                 <td>{{productTypeID}}</td>
                 <td>{{description}}</td>
                 <td class="actions">
-                    <form action="/update-producttype" method="POST" style="display: inline;">
-                        <input type="hidden" name="productTypeID" value="{{productTypeID}}">
-                        <button type="submit" class="btn-sm">Edit</button>
-                    </form>
-                    <form action="/delete-producttype" method="POST" style="display: inline;">
+                    <form action="/delete-producttype" method="POST" style="display: inline;" 
+                          onsubmit="return confirm('Are you sure you want to delete "{{description}}"? This will also delete all products in this category.')">
                         <input type="hidden" name="productTypeID" value="{{productTypeID}}">
                         <button type="submit" class="btn-sm btn-danger">Delete</button>
                     </form>
@@ -42,3 +47,21 @@
         </tbody>
     </table>
 </div>
+
+<script>
+function validateForm() {
+    const description = document.querySelector('input[name="description"]').value.trim();
+    
+    if (!description) {
+        alert('Please enter a product type description');
+        return false;
+    }
+    
+    if (description.length < 2) {
+        alert('Description must be at least 2 characters long');
+        return false;
+    }
+    
+    return true;
+}
+</script>

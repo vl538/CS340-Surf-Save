@@ -29,14 +29,14 @@ const path = require('path');
 const mysql = require('mysql2/promise');
 
 const app = express();
-const PORT = process.env.PORT || 50005;
+const PORT = process.env.PORT || 51015;
 
 //DB config use your osu credentials 
 const dbConfig = {
     host: 'classmysql.engr.oregonstate.edu',
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,  
+    user: "cs340_levince",
+    password: "8572",
+    database: "cs340_levince",  
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -246,9 +246,40 @@ app.get('/reset', async (req, res) => {
 
 
 // POST routes
-app.post('/add-customer', (req, res) => {
-    console.log(' Add customer:', req.body);
-    res.redirect('/customers');
+app.post('/add-customer', async (req, res) => {
+    try {
+        const { firstName, lastName, email, phone } = req.body;
+
+        if (!firstName || !lastName || !email) {
+            throw new Error('First name, last name, and email are required');
+        }
+
+        const [result] = await pool.query(
+            'INSERT INTO Customers (firstName, lastName, email, phone) VALUES (?, ?, ?, ?)',
+            [firstName, lastName, email, phone || null]
+        );
+
+        console.log(`✅ Customer added successfully with ID: ${result.insertId}`);
+
+        res.redirect('/customers');
+        
+    } catch (error) {
+        console.error('❌ Error adding customer:', error.message);
+
+        if (error.code === 'ER_DUP_ENTRY') {
+            res.status(400).send(`
+                <h1>Error Adding Customer</h1>
+                <p>A customer with this email already exists.</p>
+                <a href="/customers">Go back to Customers</a>
+            `);
+        } else {
+            res.status(500).send(`
+                <h1>Error Adding Customer</h1>
+                <p>Error: ${error.message}</p>
+                <a href="/customers">Go back to Customers</a>
+            `);
+        }
+    }
 });
 
 app.post('/update-customer', (req, res) => {
@@ -351,9 +382,37 @@ app.post('/delete-product', async (req, res) => {
     }
 });
 
-app.post('/add-producttype', (req, res) => {
-    console.log('Add product type:', req.body);
-    res.redirect('/producttypes');
+
+app.post('/add-producttype', async (req, res) => {
+    try {
+        const { description } = req.body;
+
+        if (!description || description.trim() === '') {
+            throw new Error('Product type description is required');
+        }
+
+        const trimmedDescription = description.trim();
+        const [result] = await pool.query(
+            'INSERT INTO ProductTypes (description) VALUES (?)',
+            [trimmedDescription]
+        );
+        res.redirect('/producttypes');
+        
+    } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            res.status(400).send(`
+                <h1>Error Adding Product Type</h1>
+                <p>Product type already exists.</p>
+                <a href="/producttypes">Go back to Product Types</a>
+            `);
+        } else {
+            res.status(500).send(`
+                <h1>Error Adding Product Type</h1>
+                <p>Error: ${error.message}</p>
+                <a href="/producttypes">Go back to Product Types</a>
+            `);
+        }
+    }
 });
 
 app.post('/update-producttype', (req, res) => {
