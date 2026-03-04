@@ -34,9 +34,9 @@ const PORT = process.env.PORT || 51015;
 //DB config use your osu credentials 
 const dbConfig = {
     host: 'classmysql.engr.oregonstate.edu',
-    user: "cs340_levince",
-    password: "8572",
-    database: "cs340_levince",  
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,  
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -117,7 +117,6 @@ app.get('/customers', async (req, res) => {
 
 app.get('/orders', async (req, res) => {
     try {
-        console.log('🔍 Fetching orders from database...');
         
         const [orders] = await pool.query(`
             SELECT o.*, CONCAT(c.firstName, ' ', c.lastName) as customerName 
@@ -125,7 +124,6 @@ app.get('/orders', async (req, res) => {
             JOIN Customers c ON o.customerID = c.customerID
             ORDER BY o.orderID
         `);
-        console.log(`Found ${orders.length} orders`);
         
         //dropdown for customers
         const [customers] = await pool.query('SELECT * FROM Customers ORDER BY customerID');
@@ -259,17 +257,13 @@ app.post('/add-customer', async (req, res) => {
             [firstName, lastName, email, phone || null]
         );
 
-        console.log(`✅ Customer added successfully with ID: ${result.insertId}`);
-
         res.redirect('/customers');
         
     } catch (error) {
-        console.error('❌ Error adding customer:', error.message);
-
         if (error.code === 'ER_DUP_ENTRY') {
             res.status(400).send(`
                 <h1>Error Adding Customer</h1>
-                <p>A customer with this email already exists.</p>
+                <p>Customer exists.</p>
                 <a href="/customers">Go back to Customers</a>
             `);
         } else {
@@ -482,9 +476,9 @@ app.post('/delete-orderitem',  async (req,  res)  =>  {
 
 
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📱 Access at: http://classwork.engr.oregonstate.edu:${PORT}`);
-    console.log('\n📊 Pages:');
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Access at: http://classwork.engr.oregonstate.edu:${PORT}`);
+    console.log('Pages:');
     console.log('   - /customers');
     console.log('   - /orders');
     console.log('   - /products');
