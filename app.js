@@ -233,6 +233,44 @@ app.get('/orderitems', async (req, res) => {
     }
 });
 
+app.get('/edit-orderitem', async (req, res) => {
+    try {
+        const orderItemID = req.query.orderItemID;
+
+        const [orderItemRows] = await pool.query(
+            'SELECT * FROM OrderItems WHERE orderItemID = ?',
+            [orderItemID]
+        );
+
+        const [orders] = await pool.query(`
+            SELECT o.orderID, CONCAT(c.firstName, ' ', c.lastName) AS customerName
+            FROM Orders o
+            JOIN Customers c ON o.customerID = c.customerID
+            ORDER BY o.orderID
+        `);
+
+        const [products] = await pool.query(
+            'SELECT * FROM Products ORDER BY productID'
+        );
+
+        if (orderItemRows.length === 0) {
+            return res.status(404).send('Order item not found');
+        }
+
+        res.render('edit-orderitem', {
+            title: 'Edit Order Item',
+            orderItem: orderItemRows[0],
+            orders: orders,
+            products: products,
+            layout: 'main',
+            helpers: handlebarsHelpers
+        });
+    } catch (error) {
+        console.error('Error loading edit-orderitem page:', error);
+        res.status(500).send(error.message);
+    }
+});
+
 // RESET
 app.get('/reset', async (req, res) => {
     try {
@@ -395,14 +433,41 @@ app.post('/delete-producttype', async (req, res) => {
 });
 
 // Order Items
-app.post('/add-orderitem', (req, res) => {
-    console.log('Add order item:', req.body);
-    res.redirect('/orderitems');
+app.post('/add-orderitem', async (req, res) => {
+    try {
+        const orderID = req.body.orderID;
+        const productID = req.body.productID;
+        const quantity = req.body.quantity;
+
+        await pool.query(
+            'INSERT INTO OrderItems (orderID, productID, quantity) VALUES (?, ?, ?)',
+            [orderID, productID, quantity]
+        );
+
+        res.redirect('/orderitems');
+    } catch (error) {
+        console.error('Add order item error:', error);
+        res.status(500).send(error.message);
+    }
 });
 
-app.post('/update-orderitem', (req, res) => {
-    console.log('Update order item:', req.body);
-    res.redirect('/orderitems');
+app.post('/update-orderitem', async (req, res) => {
+    try {
+        const orderItemID = req.body.orderItemID;
+        const orderID = req.body.orderID;
+        const productID = req.body.productID;
+        const quantity = req.body.quantity;
+
+        await pool.query(
+            'UPDATE OrderItems SET orderID = ?, productID = ?, quantity = ? WHERE orderItemID = ?',
+            [orderID, productID, quantity, orderItemID]
+        );
+
+        res.redirect('/orderitems');
+    } catch (error) {
+        console.error('Update order item error:', error);
+        res.status(500).send(error.message);
+    }
 });
 
 app.post('/delete-orderitem',  async (req,  res)  =>  {
