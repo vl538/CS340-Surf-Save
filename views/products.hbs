@@ -47,7 +47,10 @@
                     </form>
                     <form action="/delete-product" method="POST" style="display: inline;">
                         <input type="hidden" name="productID" value="{{productID}}">
-                        <button type="submit" class="btn-sm btn-danger">Delete</button>
+                        <button type="submit" class="btn-sm btn-danger" onclick="return confirm
+                            ('Are you sure you want to delete this record?')">
+                                Delete
+                        </button>
                     </form>
                 </td>
             </tr>

@@ -52,13 +52,16 @@
                 <td>${{productPrice}}</td>
                 <td>${{multiply productPrice quantity}}</td>
                 <td class="actions">
-                    <form action="/edit-orderitem" method="GET" style="display: inline;">
+                    <form action="/update-orderitem" method="POST">
                         <input type="hidden" name="orderItemID" value="{{orderItemID}}">
                         <button type="submit" class="btn-sm">Edit</button>
                     </form>
-                    <form action="/delete-orderitem" method="POST" style="display: inline;">
+                    <form action="/delete-orderitem" method="POST">
                         <input type="hidden" name="orderItemID" value="{{orderItemID}}">
-                        <button type="submit" class="btn-sm btn-danger">Delete</button>
+                        <button type="submit" class="btn-sm btn-danger" onclick="return confirm
+                            ('Are you sure you want to delete this record?')">
+                                Delete
+                        </button>
                     </form>
                 </td>
             </tr>
