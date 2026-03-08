@@ -52,7 +52,7 @@
                 <td>${{productPrice}}</td>
                 <td>${{multiply productPrice quantity}}</td>
                 <td class="actions">
-                    <form action="/update-orderitem" method="POST" style="display: inline;">
+                    <form action="/edit-orderitem" method="GET" style="display: inline;">
                         <input type="hidden" name="orderItemID" value="{{orderItemID}}">
                         <button type="submit" class="btn-sm">Edit</button>
                     </form>

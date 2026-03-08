@@ -1,0 +1,34 @@
+<h2>Edit Order Item</h2>
+
+<form action="/update-orderitem" method="POST">
+    <input type="hidden" name="orderItemID" value="{{orderItem.orderItemID}}">
+
+    <div class="form-group">
+        <label>Order</label>
+        <select name="orderID" required>
+            {{#each orders}}
+                <option value="{{orderID}}" {{#if (eq orderID ../orderItem.orderID)}}selected{{/if}}>
+                    Order #{{orderID}} - {{customerName}}
+                </option>
+            {{/each}}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Product</label>
+        <select name="productID" required>
+            {{#each products}}
+                <option value="{{productID}}" {{#if (eq productID ../orderItem.productID)}}selected{{/if}}>
+                    {{productName}} (${{price}})
+                </option>
+            {{/each}}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Quantity</label>
+        <input type="number" name="quantity" value="{{orderItem.quantity}}" min="1" required>
+    </div>
+
+    <button type="submit">Save Changes</button>
+</form>
