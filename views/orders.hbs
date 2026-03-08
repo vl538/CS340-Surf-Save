@@ -50,7 +50,10 @@
                     </form>
                     <form action="/delete-order" method="POST" style="display: inline;">
                         <input type="hidden" name="orderID" value="{{orderID}}">
-                        <button type="submit" class="btn-sm btn-danger">Delete</button>
+                        <button type="submit" class="btn-sm btn-danger" onclick="return confirm
+                            ('Are you sure you want to delete this record?')">
+                                Delete
+                        </button>
                     </form>
                 </td>
             </tr>

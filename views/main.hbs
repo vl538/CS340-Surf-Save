@@ -9,7 +9,7 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <h1 class="logo">E-commerce System</h1>
+            <h1 class="logo">Surf & Save Ecommerce System</h1>
             <ul class="nav-menu">
                 <li><a href="/">Home</a></li>
                 <li><a href="/customers">Customers</a></li>
@@ -17,7 +17,11 @@
                 <li><a href="/products">Products</a></li>
                 <li><a href="/producttypes">Product Types</a></li>
                 <li><a href="/orderitems">Order Items</a></li>
-                <li><a href="/reset">Reset</a></li>
+                <li>
+                    <a href="/reset" class="nav-reset" onclick="return confirm('Reset database to its default state?')">
+                        Reset
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>
