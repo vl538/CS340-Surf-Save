@@ -506,10 +506,11 @@ app.post('/add-orderitem', async (req, res) => {
 
 app.post('/update-orderitem', async (req, res) => {
     try {
-        const orderItemID = req.body.orderItemID;
-        const orderID = req.body.orderID;
-        const productID = req.body.productID;
-        const quantity = req.body.quantity;
+        const { orderItemID, orderID, productID, quantity } = req.body;
+
+        if (!orderItemID || !orderID || !productID || !quantity) {
+            return res.status(400).send('Missing required fields.');
+        }
 
         await pool.query(
             'UPDATE OrderItems SET orderID = ?, productID = ?, quantity = ? WHERE orderItemID = ?',
